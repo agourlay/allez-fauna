@@ -1,0 +1,72 @@
+// Gyms
+CreateCollection({ name: "gyms" });
+CreateIndex(
+  {
+    name: "gyms_by_name",
+    source: Collection("gyms"),
+    terms: [{ field: ["data", "name"] }]
+  }
+);
+
+// Routes
+CreateCollection({ name: "routes" });
+CreateIndex(
+  {
+    name: "routes_by_name",
+    source: Collection("routes"),
+    terms: [{ field: ["data", "name"] }]
+  }
+);
+CreateIndex(
+  {
+    name: "routes_by_gymId",
+    source: Collection("routes"),
+    terms: [{ field: ["data", "gymId"] }]
+  }
+);
+
+// Suggested grades
+CreateCollection({ name: "suggested_grades" });
+CreateIndex(
+  {
+    name: "suggested_grades_by_route_id",
+    source: Collection("suggested_grades"),
+    terms: [{ field: ["data", "routeId"] }]
+  }
+);
+CreateIndex(
+  {
+    name: "suggested_grades_by_gym_id",
+    source: Collection("suggested_grades"),
+    terms: [{ field: ["data", "gymId"] }]
+  }
+);
+CreateIndex(
+  {
+    name: "suggested_grades_by_user_id",
+    source: Collection("suggested_grades"),
+    terms: [{ field: ["data", "userId"] }]
+  }
+);
+// compound indexes cannot be used partially, need an extra one
+CreateIndex(
+  {
+    name: "suggested_grades_by_user_id_and_route_id",
+    source: Collection("suggested_grades"),
+    terms: [
+      { field: ["data", "userId"] },
+      { field: ["data", "routeId"] }
+    ],
+    unique: true
+  }
+);
+
+// Users
+CreateCollection({ name: "users" });
+CreateIndex({
+  name: "users_by_email",
+  source: Collection("users"),
+  terms: [{field: ["data", "email"]}],
+  unique: true
+})
+
