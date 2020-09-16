@@ -95,9 +95,9 @@ Authenticated `Users` submit `SuggestedGrades` on `Routes`.
 
 All aggregates can be queried in various form through the API.
 
-The API definition can be found [here]()
+The API definition can be found [here](https://github.com/fauna-arnaud/allez-fauna/blob/master/server/src/main/scala/agourlay/allez/api/RestAPI.scala)
 
-The [integration tests]() tests are also a great resource.
+The [integration tests](https://github.com/fauna-arnaud/allez-fauna/blob/master/integration-testing/src/it/scala/agourlay/allez/features/ApiFeature.scala) are also a great resource.
 
 Here is a non exhaustive list (query parameters non included for pagination and search):
 
