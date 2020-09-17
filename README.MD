@@ -115,7 +115,7 @@ GET    /gyms
 GET    /gyms/<id>
 GET    /gyms/<id>/routes
 DELETE /gyms
-DELETE /gyms/id
+DELETE /gyms/<id>
 POST   /gyms
 POST   /gyms/<id>
 GET    /routes
@@ -253,4 +253,5 @@ Start `sbt` and then get into the module by running `project integrationTesting`
   
 - better handling of the grades at the DB level (enum of enums?)    
 - the suggestions must have the same grade as the route's base grade
+- query language for filtering routes (less/greater than grade)
 - a UI :)

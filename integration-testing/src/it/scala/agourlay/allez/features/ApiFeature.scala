@@ -726,8 +726,7 @@ class ApiFeature extends AllezFaunaBaseFeature {
       When I post("/suggestedGrades").withBody(
         """
         {
-          "routeId" : <route-id>,
-          "userId" : <user-id>,
+          "routeId" : "<route-id>",
           "grade" : {
             "label" : "6b",
             "scale" : "Fontainebleau"
@@ -737,6 +736,8 @@ class ApiFeature extends AllezFaunaBaseFeature {
         """
       )
       Then assert status.is(401)
+      And I body.is("")
+      And assert headers.contain("WWW-Authenticate" -> """Basic realm="secure site"""")
 
       And I save("auth-header" -> "<user-secret>")
       // HTTP Basic Auth wants credentials in the form "username:password".
