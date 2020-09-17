@@ -14,9 +14,6 @@ class AllezService(
   val suggestedGradeRepo: SuggestedGradeRepository,
   val userRepo: UserRepository)(implicit ec: ExecutionContext) extends Logging {
 
-  def createDatabase(name: String): Task[String] =
-    Task.fromFuture(db.createDatabase(name))
-
   // Gyms
   def createGym(draft: GymDraft): Task[Gym] = {
     val result =
