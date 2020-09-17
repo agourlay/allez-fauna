@@ -15,11 +15,12 @@ It is built in Scala and uses FaunaDB for data storage.
 
 ## Problem statement
 
-Routes are grades according to different official scales depending on the geography and type of climbing.
+Routes are graded according to different scales depending on the geography and type of climbing.
 Those grades act a reference point to enable climbers to pick appropriately which route to tackle next.
+
 Climbers often look for things that are both challenging and fun therefore a route should not be too easy nor too hard.
 
-Unfortunately grading systems are not following a strict scientific method as the difficulty of a route is mostly a subjective feeling.
+Unfortunately grading systems are not following a strict scientific method as the difficulty of a route is also a subjective feeling.
 
 This is where `Allez-Fauna` comes in :)
 
@@ -28,19 +29,24 @@ This way, grades become clearer through collaborative grading.
 
 ## Data model
 
+The data model is rather straight forward.
+
+- `Gyms` have `Routes`.
+- Authenticated `Users` submit `SuggestedGrades` on `Routes`.
+
 ### Gyms
 
 ```json
   {
-    "id" : *any-string*,
+    "id" : "<gym-id>",
     "name" : "MagicMountain",
     "address" : "Böttgerstrasse 20, Berlin, DE 13357",
     "website" : "https://www.magicmountain.de/",
-    "createdAt" : *any-date-time*
+    "createdAt" : "2020-09-08T13:51:40.126573Z"
   }
 ```
 
-`Gyms` have `Routes`.
+They are indexed by `id` and `name`.
 
 ### Routes
 
@@ -59,27 +65,28 @@ This way, grades become clearer through collaborative grading.
   }
 ```
 
-
-Authenticated `Users` submit `SuggestedGrades` on `Routes`.
+They are indexed by `id`, `name` and `gymId`.
 
 ### User
 
 ```json
   {
-    "id" : *any-string*,
+    "id" : "<user-id>",
     "firstName" : "John",
     "surname" : "Doe",
     "country" : "USA",
     "email" : "john.doe@mail.com",
-    "createdAt" : *any-date-time*
+    "createdAt" : "2020-09-08T13:51:40.126573Z"
   }   
 ```
+
+They are indexed by `id` and `email` (unique).
 
 ### SuggestedGrade
 
 ```json
   {
-    "id" : *any-string*,
+    "id" : "<suggested-grade-id>",
     "routeId" : "<route-id>",
     "userId" : "<user-id>",
     "grade" : {
@@ -87,9 +94,11 @@ Authenticated `Users` submit `SuggestedGrades` on `Routes`.
       "scale" : "Fontainebleau"
     },
     "comment": "nasty crux midway",
-    "createdAt" : *any-date-time*
+    "createdAt" : "2020-09-08T13:51:40.126573Z"
   }
 ```
+
+They are indexed by `id`, `routeId`, `gymId`, `userId` and (`userId` + `routeId`)  (unique).
 
 ## API
 
@@ -130,11 +139,41 @@ DELETE /suggestedGrades/
 
 ## Local development env.
 
-Run FaunaDB locally:
+It is possible to use FaunaDB cloud for development as well, but we are going to set up everything locally for convenience.
+
+### FaunaDB Docker container
+
+Run FaunaDB locally using the [official Docker container](https://docs.fauna.com/fauna/current/integrations/dev.html):
 
 ```docker run --rm --name faunadb -p 8443:8443 fauna/faunadb```
 
-Install [FaunaShell]:
+You can inspect the status of the database using the admin console:
+
+```
+docker exec -it faunadb /bin/bash
+root@2aab35f2fda0:/faunadb# cd bin/
+root@2aab35f2fda0:/faunadb/bin# faunadb-admin --key secret status
+Loaded configuration from /etc/faunadb.yml...
+Replica: NoDC (data+log)
+========================
+Status  State  WorkerID  Log Segment  Address     Owns    Goal    HostID                                Persisted Timestamp
+up      live   512       0 (leader)   172.17.0.2  100.0%  100.0%  761fdd9f-b24c-43a6-a210-b19ccf51f162  2020-09-17T08:53:08.089999999Z
+```
+
+### FaunaShell
+
+We are going to use [FaunaShell](https://fauna.com/blog/introducing-fauna-shell)
+
+Open a terminal and install the Fauna Shell. If you are on a PC, you can use npm:
+```
+npm install -g fauna-shell
+```
+
+Alternatively, if you are on a Mac, you can use Homebrew:
+
+```
+brew install fauna-shell
+```
 
 Configure the local endpoint to talk to the Docker container:
 
@@ -143,13 +182,27 @@ fauna add-endpoint http://localhost:8443
 fauna default-endpoint localhost
 ```
 
-Setup schema and initial data using:
+Create the database:
+
+```
+fauna create-database allez-fauna-db
+```
+
+Next, issue an API Key for connecting to the new created DB from the service:
+
+```
+fauna create-key allez-fauna-db server --secret=secret
+``` 
+
+Setup the schema and initial data using:
 
 ```
 fauna eval allez-fauna --file=./scripts/create_schema.fql --secret=secret
 ```
 
-## How to run it
+The database is now ready!
+
+## How to run the application
 
 This is a [SBT](https://www.scala-sbt.org/index.html) multi-module project with 2 modules.
 
@@ -157,9 +210,8 @@ This is a [SBT](https://www.scala-sbt.org/index.html) multi-module project with 
 
 Contains the code for the API.
 
-Get into the module `sbt project server` and then
-- `test` for unit tests
-- `run` to start the server (port 8080)
+Start `sbt` and then get into the module by running `project server`
+- execute `run` to start the server (port 8080)
 
 Various configuration knobs are exposed in the `src/main/resources/application.conf`
 
@@ -175,8 +227,8 @@ allez-fauna {
 
 Contains the code for the integration tests.
 
-Get into the module `sbt project integration-testing` and then
-- `it:test` for the integration tests (The server needs to be started beforehand manually!)
+Start `sbt` and then get into the module by running `project integrationTesting`
+- execute `it:test` for the integration tests (The server needs to be started beforehand manually!)
 
 ## FaunaDB resources
 
