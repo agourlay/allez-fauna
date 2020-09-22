@@ -381,7 +381,7 @@ class ApiFeature extends AllezFaunaBaseFeature {
       And assert body.path("data").asArray.hasSize(1)
       And assert body.path("data").asArray.containsExactly("<route[1]>")
 
-      // Only Overhang
+      // Only Crimp
       And I get("/gyms/<gym-id>/routes?profile=Crimp")
       Then assert status.is(200)
       And assert body.path("data").asArray.hasSize(0)
@@ -435,28 +435,6 @@ class ApiFeature extends AllezFaunaBaseFeature {
       And I get("/gyms/<gym-id>/routes?type=Lead&profile=Overhang&grade=6a")
       Then assert status.is(200)
       And assert body.path("data").asArray.isEmpty
-    }
-
-    Scenario("create a route on an gym which does not exist") {
-      Given I save("random-gym-id" -> "<random-positive-integer>")
-      Given I post("/routes").withBody(
-        """
-        {
-          "gymId" : "<random-gym-id>",
-          "name" : "name",
-          "climbingType" : "TopRope",
-          "grade" : {
-            "label" : "6a",
-            "scale" : "Fontainebleau"
-          },
-          "profile" : [ "Dynamic" ],
-          "gripsColor" : "Blue",
-          "setAt" : "2020-09-08T13:51:40.126573Z"
-        }
-         """
-      )
-      Then assert status.is(400)
-      And assert body.is("transaction aborted: gymId <random-gym-id> does not exist")
     }
 
     Scenario("create, get & delete a route") {
@@ -520,6 +498,28 @@ class ApiFeature extends AllezFaunaBaseFeature {
 
       And I get("/routes/<route-id>")
       Then assert status.is(404)
+    }
+
+    Scenario("create a route on an gym which does not exist") {
+      Given I save("random-gym-id" -> "<random-positive-integer>")
+      Given I post("/routes").withBody(
+        """
+        {
+          "gymId" : "<random-gym-id>",
+          "name" : "name",
+          "climbingType" : "TopRope",
+          "grade" : {
+            "label" : "6a",
+            "scale" : "Fontainebleau"
+          },
+          "profile" : [ "Dynamic" ],
+          "gripsColor" : "Blue",
+          "setAt" : "2020-09-08T13:51:40.126573Z"
+        }
+         """
+      )
+      Then assert status.is(400)
+      And assert body.is("transaction aborted: gymId <random-gym-id> does not exist")
     }
 
     Scenario("update a route (does not update createdAt)") {

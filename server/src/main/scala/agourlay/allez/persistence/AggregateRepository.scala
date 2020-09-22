@@ -35,44 +35,11 @@ trait AggregateRepository[A <: Aggregate] extends AggregateRepository.Implicits 
     result.decode[String]
   }
 
-  /**
-   * It returns a sequence of unique valid Ids leveraging Fauna's NewId function.
-   *
-   * The produced Ids are guaranteed to be unique across the entire
-   * cluster and once generated will never be generated a second time.
-   *
-   * @param size the number of unique Ids to return
-   * @return a sequence of unique valid Ids
-   *
-   * @see [[https://docs.fauna.com/fauna/current/reference/queryapi/misc/newid NewId]]
-   */
-  def nextIds(size: Int)(implicit ec: ExecutionContext): Future[Seq[String]] = {
-    val indexes = (1 to size).toList
-
-    val result = client.query(
-      Map(
-        indexes,
-        Lambda(_ => NewId())))
-
-    result.decode[Seq[String]]
-  }
-
+  // TODO should generate the id in a single db call instead of expecting the id to be there
   def saveDocument(entity: A)(implicit ec: ExecutionContext): Future[A] = {
     val result = client.query(
       saveQuery(entity.id, entity))
     result.decode[A]
-  }
-
-  def saveDocuments(entities: A*)(implicit ec: ExecutionContext): Future[Seq[A]] = {
-    val result = client.query(
-      Map(
-        entities,
-        Lambda { nextEntity =>
-          val id = Select("id", nextEntity)
-          saveQuery(id, nextEntity)
-        }))
-
-    result.decode[Seq[A]]
   }
 
   def removeDocument(id: String)(implicit ec: ExecutionContext): Future[Option[A]] = {

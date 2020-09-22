@@ -13,13 +13,13 @@ class SuggestedGradeRepository(faunaClient: FaunaClient) extends AggregateReposi
   implicit override protected val faunaCodec: Codec[SuggestedGrade] = Codec.Record[SuggestedGrade]
 
   // the userId has been validated during the authentication already
-  def saveSuggestedRating(suggestedRating: SuggestedGrade)(implicit ec: ExecutionContext): Future[SuggestedGrade] = {
+  def saveSuggestedRating(suggestedGrade: SuggestedGrade)(implicit ec: ExecutionContext): Future[SuggestedGrade] = {
     // TODO check that the suggestion as the same scale as the base grade?
     val result = client.query(
       If(
-        Exists(Ref(Collection("routes"), suggestedRating.routeId)),
-        saveQuery(suggestedRating.id, suggestedRating),
-        Abort(StringV(s"routeId ${suggestedRating.routeId} does not exist"))))
+        Exists(Ref(Collection("routes"), suggestedGrade.routeId)),
+        saveQuery(suggestedGrade.id, suggestedGrade),
+        Abort(StringV(s"routeId ${suggestedGrade.routeId} does not exist"))))
 
     result.decode[SuggestedGrade]
       .recoverWith {

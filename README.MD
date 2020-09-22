@@ -227,8 +227,7 @@ allez-fauna {
 
 Contains the code for the integration tests.
 
-Start `sbt` and then get into the module by running `project integrationTesting`
-- execute `it:test` for the integration tests (The server needs to be started beforehand manually!)
+Start `sbt` and execute `it:test` for the integration tests (The server needs to be started beforehand manually!)
 
 ## FaunaDB resources
 
