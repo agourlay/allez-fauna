@@ -349,7 +349,7 @@ class ApiFeature extends AllezFaunaBaseFeature {
         """
         {
           "gymId" : "<gym-id>",
-          "name" : "tchuss!",
+          "name" : "stairway to heaven",
           "climbingType" : "Lead",
           "grade" : {
             "label" : "6b",
@@ -679,7 +679,7 @@ class ApiFeature extends AllezFaunaBaseFeature {
       Then assert body.is("A user already exists with this email")
     }
 
-    Scenario("user login") {
+    Scenario("user login returns a secret as text/plain") {
       Given I create_a_user()
       Given I post("/user-login").withBody(
         """
@@ -690,6 +690,8 @@ class ApiFeature extends AllezFaunaBaseFeature {
         """
       )
       And assert status.is(200)
+      Then assert headers.contain("Content-Type" -> "text/plain; charset=UTF-8")
+      Then assert body.isNot("") // the secret
     }
 
     Scenario("user login failures") {
