@@ -591,7 +591,7 @@ class ApiFeature extends AllezFaunaBaseFeature {
       Then assert status.is(200)
       And assert body.path("data").asArray.isEmpty
 
-      RepeatConcurrently(times = 100, parallelism = 10, maxTime = 5.seconds){
+      RepeatConcurrently(times = 500, parallelism = 20, maxTime = 10.seconds){
         Given I create_a_gym()
         And I get("/gyms/<gym-id>")
         Then assert body.is("<gym>")
@@ -600,14 +600,13 @@ class ApiFeature extends AllezFaunaBaseFeature {
         Then assert body.is("<route>")
       }
 
-      Given I get("/gyms").withParams("pageSize" -> "500")
+      Given I get("/gyms").withParams("pageSize" -> "1000")
       Then assert status.is(200)
-      And assert body.path("data").asArray.hasSize(100)
+      And assert body.path("data").asArray.hasSize(500)
 
-      Given I get("/routes").withParams("pageSize" -> "500")
+      Given I get("/routes").withParams("pageSize" -> "1000")
       Then assert status.is(200)
-      And assert body.path("data").asArray.hasSize(100)
-
+      And assert body.path("data").asArray.hasSize(500)
     }
 
     Scenario("create, get & delete a user") {
@@ -857,8 +856,8 @@ class ApiFeature extends AllezFaunaBaseFeature {
       And assert body.path("data").asArray.isEmpty
 
       WithHeaders("Authorization" -> "Basic <auth-header>"){
-        Given I create_suggested_grade("<route-id[0]>")
-        Then I create_suggested_grade("<route-id[1]>")
+        Given I create_a_suggested_grade("<route-id[0]>")
+        Then I create_a_suggested_grade("<route-id[1]>")
       }
 
       And I get("/users/<user-id>/suggestedGrades")
@@ -885,8 +884,8 @@ class ApiFeature extends AllezFaunaBaseFeature {
       And assert body.path("data").asArray.isEmpty
 
       WithHeaders("Authorization" -> "Basic <auth-header>"){
-        Given I create_suggested_grade("<route-id[0]>")
-        Then I create_suggested_grade("<route-id[1]>")
+        Given I create_a_suggested_grade("<route-id[0]>")
+        Then I create_a_suggested_grade("<route-id[1]>")
       }
 
       And I get("/routes/<route-id[0]>/suggestedGrades")
@@ -898,6 +897,31 @@ class ApiFeature extends AllezFaunaBaseFeature {
       Then assert status.is(200)
       And assert body.path("data").asArray.hasSize(1)
       And assert body.path("data").asArray.containsExactly("<suggested-grade[1]>")
+    }
+
+    Scenario("support concurrent writes on users, login and suggested routes") {
+      Given I create_a_gym()
+      And I create_a_route()
+      And I create_a_route()
+
+      RepeatConcurrently(times = 500, parallelism = 20, maxTime = 10.seconds){
+        And I create_a_user()
+        And I login_user()
+        And I prepare_user_header()
+
+        WithHeaders("Authorization" -> "Basic <auth-header>"){
+          Then I create_a_suggested_grade("<route-id[0]>")
+          Then I create_a_suggested_grade("<route-id[1]>")
+        }
+      }
+
+      And I get("/routes/<route-id[0]>/suggestedGrades").withParams("pageSize" -> "1000")
+      Then assert status.is(200)
+      And assert body.path("data").asArray.hasSize(500)
+
+      And I get("/routes/<route-id[1]>/suggestedGrades").withParams("pageSize" -> "1000")
+      Then assert status.is(200)
+      And assert body.path("data").asArray.hasSize(500)
     }
   }
 }

@@ -102,7 +102,7 @@ trait AllezFaunaBaseFeature extends CornichonFeature {
     And I transform_session("auth-header")(s => Base64.getEncoder.encodeToString(s"$s:".getBytes(StandardCharsets.UTF_8)))
   }
 
-  def create_suggested_grade(routeId: String): Step = Attach {
+  def create_a_suggested_grade(routeId: String): Step = Attach {
     When I post("/suggestedGrades").withBody(
       s"""
           {
