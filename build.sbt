@@ -43,6 +43,7 @@ lazy val commonSettings = Seq(
   fork in Test := true,
   parallelExecution in IntegrationTest := false,
   scalacOptions ++= compilerOptions,
+  resolvers += "Sonatype snapshots" at "https://oss.sonatype.org/content/repositories/snapshots/",
   addCompilerPlugin("com.olegpy" %% "better-monadic-for" % "0.3.1")
 )
 
@@ -99,8 +100,8 @@ lazy val library =
       val http4s         = "0.21.7"
       val cornichon      = "0.19.4"
       val logback        = "1.3.0-alpha5"
-      val faunaDriver    = "3.0.0"
-      val pureConfig     = "0.13.0"
+      val faunaDriver    = "3.0.1"
+      val pureConfig     = "0.14.0"
     }
     val circeCore      = "io.circe"              %% "circe-core"                  % Version.circe
     val circeGeneric   = "io.circe"              %% "circe-generic"               % Version.circe
