@@ -3,7 +3,7 @@ package agourlay.allez.api
 import agourlay.allez.service.AllezService
 import agourlay.allez.util.Logging
 import cats.effect.{ Clock, Resource }
-import cats.implicits._
+import cats.syntax.all._
 import faunadb.errors._
 import fs2.Stream
 import fs2.text.utf8Encode

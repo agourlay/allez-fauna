@@ -97,8 +97,8 @@ lazy val library =
     object Version {
       val circe          = "0.13.0"
       val monix          = "3.2.2"
-      val http4s         = "0.21.7"
-      val cornichon      = "0.19.4"
+      val http4s         = "0.21.8"
+      val cornichon      = "0.19.5"
       val logback        = "1.3.0-alpha5"
       val faunaDriver    = "3.0.1"
       val pureConfig     = "0.14.0"
