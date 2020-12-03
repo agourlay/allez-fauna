@@ -3,7 +3,6 @@ package agourlay.allez.features
 import agourlay.allez.AllezFaunaBaseFeature
 import java.nio.charset.StandardCharsets
 import java.util.Base64
-import scala.concurrent.duration._
 
 class ApiFeature extends AllezFaunaBaseFeature {
 
@@ -582,33 +581,6 @@ class ApiFeature extends AllezFaunaBaseFeature {
       )
     }
 
-    Scenario("support concurrent writes on gyms and routes") {
-      Given I get("/gyms")
-      Then assert status.is(200)
-      And assert body.path("data").asArray.isEmpty
-
-      Given I get("/routes")
-      Then assert status.is(200)
-      And assert body.path("data").asArray.isEmpty
-
-      RepeatConcurrently(times = 500, parallelism = 20, maxTime = 10.seconds){
-        Given I create_a_gym()
-        And I get("/gyms/<gym-id>")
-        Then assert body.is("<gym>")
-        And I create_a_route()
-        And I get("/routes/<route-id>")
-        Then assert body.is("<route>")
-      }
-
-      Given I get("/gyms").withParams("pageSize" -> "1000")
-      Then assert status.is(200)
-      And assert body.path("data").asArray.hasSize(500)
-
-      Given I get("/routes").withParams("pageSize" -> "1000")
-      Then assert status.is(200)
-      And assert body.path("data").asArray.hasSize(500)
-    }
-
     Scenario("create, get & delete a user") {
       Given I post("/users").withBody(
         """
@@ -897,31 +869,6 @@ class ApiFeature extends AllezFaunaBaseFeature {
       Then assert status.is(200)
       And assert body.path("data").asArray.hasSize(1)
       And assert body.path("data").asArray.containsExactly("<suggested-grade[1]>")
-    }
-
-    Scenario("support concurrent writes on users, login and suggested routes") {
-      Given I create_a_gym()
-      And I create_a_route()
-      And I create_a_route()
-
-      RepeatConcurrently(times = 500, parallelism = 20, maxTime = 10.seconds){
-        And I create_a_user()
-        And I login_user()
-        And I prepare_user_header()
-
-        WithHeaders("Authorization" -> "Basic <auth-header>"){
-          Then I create_a_suggested_grade("<route-id[0]>")
-          Then I create_a_suggested_grade("<route-id[1]>")
-        }
-      }
-
-      And I get("/routes/<route-id[0]>/suggestedGrades").withParams("pageSize" -> "1000")
-      Then assert status.is(200)
-      And assert body.path("data").asArray.hasSize(500)
-
-      And I get("/routes/<route-id[1]>/suggestedGrades").withParams("pageSize" -> "1000")
-      Then assert status.is(200)
-      And assert body.path("data").asArray.hasSize(500)
     }
   }
 }

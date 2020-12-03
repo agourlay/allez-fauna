@@ -30,7 +30,7 @@ class GymRepository(faunaClient: FaunaClient) extends AggregateRepository[Gym] {
     val result = client.query(
       If(
         IsNonEmpty(
-          Paginate(Match(Index(("routes_by_gymId")), gymId))),
+          Paginate(Match(Index("routes_by_gymId"), gymId))),
         Abort(StringV(s"gymId $gymId can't be deleted as it has routes attached")),
         Select("data", Delete(Ref(Collection(collectionName), gymId)))))
 
