@@ -44,7 +44,7 @@ object Main extends TaskApp with Logging {
 
     // Server
     val server = api.start(config.httpPort)
-    server.use(_ => Task.never).map(_ => ExitCode.Success)
+    server.use(_ => Task.never).as(ExitCode.Success)
   }
 
 }

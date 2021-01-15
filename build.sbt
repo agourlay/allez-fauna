@@ -39,7 +39,7 @@ lazy val compilerOptions = Seq(
 
 lazy val commonSettings = Seq(
   description := "An API for climbers",
-  scalaVersion := "2.12.12",
+  scalaVersion := "2.12.13",
   fork in Test := true,
   parallelExecution in IntegrationTest := false,
   scalacOptions ++= compilerOptions,
@@ -97,8 +97,8 @@ lazy val library =
     object Version {
       val circe          = "0.13.0"
       val monix          = "3.3.0"
-      val http4s         = "0.21.13"
-      val cornichon      = "0.19.5"
+      val http4s         = "0.21.15"
+      val cornichon      = "0.19.6"
       val logback        = "1.3.0-alpha5"
       val faunaDriver    = "4.0.1"
       val pureConfig     = "0.14.0"
