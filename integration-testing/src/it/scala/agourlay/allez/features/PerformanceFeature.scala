@@ -7,6 +7,22 @@ class PerformanceFeature extends AllezFaunaBaseFeature {
 
   def feature = Feature("AllezFauna performance API") {
 
+    Scenario("sequential reads on gyms") {
+      Given I create_a_gym()
+      Repeat(times = 10000) {
+        And I get("/gyms/<gym-id>")
+        Then assert status.is(200)
+      }
+    }
+
+    Scenario("concurrent reads on gyms") {
+      Given I create_a_gym()
+      RepeatConcurrently(times = 10000, parallelism = 30, maxTime = 20.seconds) {
+        And I get("/gyms/<gym-id>")
+        Then assert status.is(200)
+      }
+    }
+
     Scenario("support concurrent pagination of routes") {
       Given I get("/routes")
       Then assert status.is(200)
