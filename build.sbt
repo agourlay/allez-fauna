@@ -40,8 +40,8 @@ lazy val compilerOptions = Seq(
 lazy val commonSettings = Seq(
   description := "An API for climbers",
   scalaVersion := "2.12.13",
-  fork in Test := true,
-  parallelExecution in IntegrationTest := false,
+  Test / fork := true,
+  IntegrationTest / parallelExecution  := false,
   scalacOptions ++= compilerOptions,
   resolvers += "Sonatype snapshots" at "https://oss.sonatype.org/content/repositories/snapshots/",
   addCompilerPlugin("com.olegpy" %% "better-monadic-for" % "0.3.1")
@@ -59,7 +59,7 @@ lazy val server =
     .settings(commonSettings)
      .settings(
         name := "server",
-        testOptions in Test += Tests.Argument(TestFrameworks.ScalaCheck, "-verbosity", "1"),
+        Test / testOptions += Tests.Argument(TestFrameworks.ScalaCheck, "-verbosity", "1"),
         testFrameworks += new TestFramework("utest.runner.Framework"),
         libraryDependencies ++= Seq(
            library.http4sCirce,
@@ -97,11 +97,11 @@ lazy val library =
     object Version {
       val circe          = "0.13.0"
       val monix          = "3.3.0"
-      val http4s         = "0.21.16"
+      val http4s         = "0.21.22"
       val cornichon      = "0.19.6"
       val logback        = "1.3.0-alpha5"
-      val faunaDriver    = "4.0.1"
-      val pureConfig     = "0.14.0"
+      val faunaDriver    = "4.1.0"
+      val pureConfig     = "0.14.1"
     }
     val circeCore      = "io.circe"              %% "circe-core"                  % Version.circe
     val circeGeneric   = "io.circe"              %% "circe-generic"               % Version.circe

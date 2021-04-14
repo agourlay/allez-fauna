@@ -17,7 +17,7 @@ class PerformanceFeature extends AllezFaunaBaseFeature {
 
     Scenario("concurrent reads on gyms") {
       Given I create_a_gym()
-      RepeatConcurrently(times = 10000, parallelism = 30, maxTime = 20.seconds) {
+      RepeatConcurrently(times = 10000, parallelism = 30, maxTime = 30.seconds) {
         And I get("/gyms/<gym-id>")
         Then assert status.is(200)
       }
@@ -49,7 +49,7 @@ class PerformanceFeature extends AllezFaunaBaseFeature {
         Then assert status.is(201)
       }
 
-      RepeatConcurrently(times = 500, parallelism = 20, maxTime = 20.seconds) {
+      RepeatConcurrently(times = 500, parallelism = 20, maxTime = 30.seconds) {
         Given I get("/routes")
         Then assert status.is(200)
         And assert body.path("data").asArray.hasSize(12)
