@@ -39,7 +39,7 @@ lazy val compilerOptions = Seq(
 
 lazy val commonSettings = Seq(
   description := "An API for climbers",
-  scalaVersion := "2.12.13",
+  scalaVersion := "2.12.14",
   Test / fork := true,
   IntegrationTest / parallelExecution  := false,
   scalacOptions ++= compilerOptions,
@@ -60,7 +60,6 @@ lazy val server =
      .settings(
         name := "server",
         Test / testOptions += Tests.Argument(TestFrameworks.ScalaCheck, "-verbosity", "1"),
-        testFrameworks += new TestFramework("utest.runner.Framework"),
         libraryDependencies ++= Seq(
            library.http4sCirce,
            library.http4sServer,
@@ -95,13 +94,13 @@ lazy val integrationTesting =
 lazy val library =
   new {
     object Version {
-      val circe          = "0.13.0"
-      val monix          = "3.3.0"
-      val http4s         = "0.21.22"
+      val circe          = "0.14.1"
+      val monix          = "3.4.0"
+      val http4s         = "0.21.25"
       val cornichon      = "0.19.6"
       val logback        = "1.3.0-alpha5"
-      val faunaDriver    = "4.1.0"
-      val pureConfig     = "0.14.1"
+      val faunaDriver    = "4.1.1"
+      val pureConfig     = "0.16.0"
     }
     val circeCore      = "io.circe"              %% "circe-core"                  % Version.circe
     val circeGeneric   = "io.circe"              %% "circe-generic"               % Version.circe
